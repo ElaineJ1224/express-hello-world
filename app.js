@@ -2,26 +2,7 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 
-// 讓 express 可以解析 JSON（處理 LINE webhook 必須）
-app.use(express.json());
-
-// 首頁路由，顯示畫面用
-app.get("/", (req, res) => res.type('html').send(html));
-
-// 接收 LINE webhook 的路由（正式啟用）
-app.post("/webhook", (req, res) => {
-  console.log("✅ 收到 LINE Webhook 資料：", req.body);
-  res.sendStatus(200); // LINE 規定要回 200
-});
-
-// 啟動伺服器
-const server = app.listen(port, () => {
-  console.log(`🚀 App is running on port ${port}`);
-});
-server.keepAliveTimeout = 120 * 1000;
-server.headersTimeout = 120 * 1000;
-
-// 首頁顯示用的 HTML 畫面
+// 首頁顯示用的 HTML 畫面（往上搬！）
 const html = `
 <!DOCTYPE html>
 <html>
@@ -71,4 +52,24 @@ const html = `
     </section>
   </body>
 </html>
+`;
+
+// 讓 express 可以解析 JSON（處理 LINE webhook 必須）
+app.use(express.json());
+
+// 首頁路由，顯示畫面用
+app.get("/", (req, res) => res.type('html').send(html));
+
+// 接收 LINE webhook 的路由（正式啟用）
+app.post("/webhook", (req, res) => {
+  console.log("✅ 收到 LINE Webhook 資料：", req.body);
+  res.sendStatus(200); // LINE 規定要回 200
+});
+
+// 啟動伺服器
+const server = app.listen(port, () => {
+  console.log(`🚀 App is running on port ${port}`);
+});
+server.keepAliveTimeout = 120 * 1000;
+server.headersTimeout = 120 * 1000;
 `;
