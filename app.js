@@ -2,7 +2,26 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
 
-// 先定義首頁要顯示的 HTML
+// 讓 express 可以解析 JSON（處理 LINE webhook 必須）
+app.use(express.json());
+
+// 📌 Line Webhook 的 POST 接收端點（這是關鍵）
+app.post("/webhook", (req, res) => {
+  console.log("✅ 收到 LINE Webhook 資料：", req.body);
+  res.sendStatus(200); // LINE 平台要求回傳 200
+});
+
+// 🔍 首頁路由（打 https://xxxxx.onrender.com 會顯示畫面）
+app.get("/", (req, res) => res.type("html").send(html));
+
+// 🚀 啟動伺服器
+const server = app.listen(port, () => {
+  console.log(`🚀 App is running on port ${port}`);
+});
+server.keepAliveTimeout = 120 * 1000;
+server.headersTimeout = 120 * 1000;
+
+// 🖼️ 首頁畫面用 HTML（含煙火）
 const html = `
 <!DOCTYPE html>
 <html>
@@ -20,36 +39,22 @@ const html = `
       }, 500);
     </script>
     <style>
-      html {
-        font-family: sans-serif;
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: white;
+      }
+      section {
+        font-size: 2em;
         font-weight: bold;
-        font-size: 48px;
-        text-align: center;
-        margin-top: 15%;
       }
     </style>
   </head>
   <body>
-    Hello from Render!
+    <section>Hello from Render!</section>
   </body>
 </html>
 `;
-
-// middleware：解析 JSON body
-app.use(express.json());
-
-// GET 首頁
-app.get("/", (req, res) => res.type("html").send(html));
-
-// POST webhook 路徑
-app.post("/webhook", (req, res) => {
-  console.log("✅ 收到 LINE Webhook 資料：", req.body);
-  res.sendStatus(200);
-});
-
-// 啟動伺服器
-const server = app.listen(port, () => {
-  console.log(`🚀 App is running on port ${port}`);
-});
-server.keepAliveTimeout = 120 * 1000;
-server.headersTimeout = 120 * 1000;
